@@ -3,9 +3,11 @@ name = "kotiki-home-bot"
 version = "0.0.1"
 dependencies = [
     "click>=8",
-    "adaptix == 3.0.0b5",
+    "adaptix==3.0.0b5",
     "tinytuya>=1",
-    "pyaml >= 24",
+    "pyaml>=24",
+    "fastapi>=0.115",
+    "uvicorn>=0.32"
 ]
 
 [tool.setuptools.packages.find]

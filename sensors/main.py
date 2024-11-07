@@ -1,9 +1,11 @@
+import asyncio
 import logging
 import sys
 from pathlib import Path
 
 import click
 
+from sensors.api.api import SensorAPI
 from sensors.core.config import load_config
 from sensors.core.errors import ArgumentError, ResponseParseError
 from sensors.core.log import setup_logging
@@ -36,3 +38,15 @@ def get_tuya(config_file: Path, debug: bool, device: str):
         log.info("Device '{}' measurements:".format(device))
         for name, value in measurements.items():
             log.info("  {}: {}".format(name, value))
+
+
+@main.command()
+@click.option("--config-file", type=Path, default=Path("./config.yml"))
+@click.option("--debug", is_flag=True, default=False)
+@click.option("--host", default="127.0.0.1")
+@click.option("--port", type=int, default=8080)
+def api(config_file: Path, debug: bool, host: str, port: int):
+    setup_logging(debug)
+    config = load_config(config_file)
+    sensor_api = SensorAPI(config)
+    asyncio.run(sensor_api.start(host=host, port=port))
