@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install .
 
-CMD ["python", "./main.py", "api"]
+CMD ["python", "./main.py", "api", "--host", "0.0.0.0"]
