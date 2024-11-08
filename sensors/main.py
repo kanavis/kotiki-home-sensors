@@ -22,12 +22,13 @@ def main(*_, **__):
 @main.command()
 @click.option("--config-file", type=Path, default=Path("./config.yml"))
 @click.option("--debug", is_flag=True, default=False)
+@click.option("--no-unit", is_flag=True, default=False)
 @click.argument("device")
-def get_tuya(config_file: Path, debug: bool, device: str):
+def get_tuya(config_file: Path, debug: bool, device: str, no_unit: bool):
     setup_logging(debug)
     config = load_config(config_file)
     try:
-        measurements = tuya_get_device_measurements(config, device)
+        measurements = tuya_get_device_measurements(config, device, no_unit=no_unit)
     except ArgumentError as err:
         log.error("Argument error: {}".format(err))
         sys.exit(1)

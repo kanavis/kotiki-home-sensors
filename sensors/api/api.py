@@ -24,9 +24,11 @@ class SensorAPI:
         ))
         await server.serve()
 
-    async def api_sensors(self, name: str):
+    async def api_sensors(self, name: str, no_unit: bool = False):
         if name not in self.config.tuya_devices:
             raise HTTPException(status_code=404, detail="Sensor not found")
         loop = asyncio.get_running_loop()
-        result = await loop.run_in_executor(self.executor, tuya_get_device_measurements, self.config, name)
+        result = await loop.run_in_executor(
+            self.executor, tuya_get_device_measurements, self.config, name, no_unit,
+        )
         return {"measurements": result}

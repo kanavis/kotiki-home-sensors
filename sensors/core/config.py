@@ -12,6 +12,8 @@ from sensors.core.retort import base_retort
 class TuyaDataPoint:
     name: str
     multiplier: Optional[float] = None
+    float_signs: Optional[int] = None
+    unit: Optional[str] = None
 
 
 @dataclasses.dataclass
