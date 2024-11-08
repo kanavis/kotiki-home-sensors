@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Union
 
 import tinytuya
 
@@ -27,7 +27,7 @@ def create_device(config: Config, device_name: str) -> tinytuya.Device:
     return tinytuya.Device(**kwargs)
 
 
-def get_device_measurements(config: Config, device_name: str, no_unit=False) -> Dict[str, str]:
+def get_device_measurements(config: Config, device_name: str, no_unit=False) -> Dict[str, Union[str, int, float]]:
     if device_name not in config.tuya_devices:
         raise ArgumentError("Tuya device '{}' doesn't exist".format(device_name))
     device_config = config.tuya_devices[device_name]
@@ -59,7 +59,6 @@ def get_device_measurements(config: Config, device_name: str, no_unit=False) -> 
             value = float(value) * dp_config.multiplier
         if dp_config.float_signs is not None and isinstance(value, float):
             value = "{{:.{}f}}".format(dp_config.float_signs).format(value)
-        value = str(value)
         if not no_unit and dp_config.unit is not None:
             value = "{}{}".format(value, dp_config.unit)
         result[dp_config.name] = value

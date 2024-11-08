@@ -1,6 +1,6 @@
 import dataclasses
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 import yaml
 
@@ -33,9 +33,21 @@ class TuyaDevice:
 
 
 @dataclasses.dataclass
+class TuyaDeviceExporter:
+    measurements: List[str]
+
+
+@dataclasses.dataclass
+class PrometheusExporterConfig:
+    request_every_sec: int
+    tuya_devices: Dict[str, TuyaDeviceExporter]
+
+
+@dataclasses.dataclass
 class Config:
     tuya_device_types: Dict[str, TuyaDeviceType] = dataclasses.field(default_factory=dict)
     tuya_devices: Dict[str, TuyaDevice] = dataclasses.field(default_factory=dict)
+    prometheus_exporter: Optional[PrometheusExporterConfig] = None
 
 
 retort = base_retort
