@@ -43,9 +43,9 @@ def run_prometheus_exporter(host: str, port: int, config: Config):
             metric_targets=metric_targets,
         ))
 
-    last_collect = time.monotonic()
     last_exception = None
     while True:
+        start_collecting = time.monotonic()
         try:
             for device_metric in devices:
                 log.info("Collecting metrics from {}".format(device_metric.tuya_device_name))
@@ -64,8 +64,7 @@ def run_prometheus_exporter(host: str, port: int, config: Config):
                 time.sleep(5)
             last_exception = e
         else:
-            passed = time.monotonic() - last_collect
-            last_collect = time.monotonic()
+            passed = time.monotonic() - start_collecting
             left = config.prometheus_exporter.request_every_sec - passed
             if left > 0:
                 log.info("Sleeping for {:.2f} seconds".format(left))
