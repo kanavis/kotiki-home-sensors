@@ -21,8 +21,9 @@ def collect_metrics(config: Config, metric: DeviceMetrics) -> List[str]:
     measurements = tuya_get_device_measurements(config, device_name=metric.tuya_device_name, no_unit=True)
     collected = []
     for metric_name, gauge in metric.metric_targets.items():
-        gauge.set(float(measurements[metric_name]))
-        collected.append("{} -> {}".format(metric_name, gauge))
+        value = float(measurements[metric_name])
+        gauge.set(value)
+        collected.append("{} -> {}: {}".format(metric_name, gauge, value))
 
     return collected
 
