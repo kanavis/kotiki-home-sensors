@@ -57,7 +57,7 @@ def load_config(config_path: Path) -> Config:
     with open(config_path, "r", encoding="utf-8") as f:
         config = retort.load(yaml.safe_load(f), Config)
     for device_name, device in config.tuya_devices.items():
-        if device.device_type != "gateway" and device.device_type not in config.tuya_device_types:
+        if device.device_type not in ("gateway", "unknown") and device.device_type not in config.tuya_device_types:
             raise ConfigParseError("Config validation error: device '{}' has unknown type '{}'".format(
                 device_name, device.device_type,
             ))

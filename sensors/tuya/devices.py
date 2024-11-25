@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import tinytuya
 
@@ -64,3 +64,17 @@ def get_device_measurements(config: Config, device_name: str, no_unit=False) -> 
         result[dp_config.name] = value
 
     return result
+
+
+def query_gateway(config: Config, device_name: str) -> Optional[dict]:
+    if device_name not in config.tuya_devices:
+        raise ArgumentError("Tuya device '{}' doesn't exist".format(device_name))
+    device = create_device(config, device_name)
+    return device.subdev_query()
+
+
+def query_unknown(config: Config, device_name: str) -> Optional[dict]:
+    if device_name not in config.tuya_devices:
+        raise ArgumentError("Tuya device '{}' doesn't exist".format(device_name))
+    device = create_device(config, device_name)
+    return device.status()

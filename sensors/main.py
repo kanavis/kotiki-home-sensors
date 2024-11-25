@@ -11,6 +11,8 @@ from sensors.core.errors import ArgumentError, ResponseParseError
 from sensors.core.log import setup_logging
 from sensors.prometheus.exporter import run_prometheus_exporter
 from sensors.tuya.devices import get_device_measurements as tuya_get_device_measurements
+from sensors.tuya.devices import query_gateway as tuya_query_gateway
+from sensors.tuya.devices import query_unknown as tuya_query_unknown
 
 log = logging.getLogger(__name__)
 
@@ -28,18 +30,27 @@ def main(*_, **__):
 def get_tuya(config_file: Path, debug: bool, device: str, no_unit: bool):
     setup_logging(debug)
     config = load_config(config_file)
+    if device not in config.tuya_devices:
+        raise ArgumentError("Tuya device '{}' doesn't exist".format(device))
+    device_config = config.tuya_devices[device]
     try:
-        measurements = tuya_get_device_measurements(config, device, no_unit=no_unit)
+        if device_config.device_type == "gateway":
+            print(tuya_query_gateway(config, device))
+        elif device_config.device_type == "unknown":
+            print(tuya_query_unknown(config, device))
+        else:
+            measurements = tuya_get_device_measurements(
+                config, device, no_unit=no_unit,
+            )
+            log.info("Device '{}' measurements:".format(device))
+            for name, value in measurements.items():
+                log.info("  {}: {}".format(name, value))
     except ArgumentError as err:
         log.error("Argument error: {}".format(err))
         sys.exit(1)
     except ResponseParseError as err:
         log.error("Response parse error: {}".format(err))
         sys.exit(1)
-    else:
-        log.info("Device '{}' measurements:".format(device))
-        for name, value in measurements.items():
-            log.info("  {}: {}".format(name, value))
 
 
 @main.command()
